@@ -15,7 +15,7 @@ pipeline {
   stages {
     stage('checkout') {
       steps {
-        git branch: 'develop', url: 'https://github.com/bigandbuy/tf-jenkins-demo.git'
+        git branch: 'master', url: 'https://github.com/bigandbuy/tf-jenkins-demo.git'
 
       }
     }
@@ -31,19 +31,19 @@ pipeline {
       }
     }
 
-    // stage('Provision infrastructure') {
+    stage('Provision infrastructure') {
 
-    //   steps {
-    //     dir('dev') {
-    //       sh 'terraform init'
-    //       sh 'terraform plan -out=plan'
-    //       // sh ‘terraform destroy -auto-approve’
-    //       sh 'terraform apply plan'
-    //     }
+      steps {
+        dir('dev') {
+          sh 'terraform init'
+          sh 'terraform plan -out=plan'
+          // sh ‘terraform destroy -auto-approve’
+          //sh 'terraform apply plan'
+        }
 
 
-    //   }
-    // }
+      }
+    }
 
 
 
