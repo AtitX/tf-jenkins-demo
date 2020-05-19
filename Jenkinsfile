@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('checkout') {
       steps {
-        git url: 'git@github.com:bigandbuy/tf-jenkins-demo.git'
+        git url: 'https://github.com/bigandbuy/tf-jenkins-demo.git'
       }
     }
   }
