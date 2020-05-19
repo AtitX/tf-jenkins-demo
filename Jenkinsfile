@@ -1,46 +1,41 @@
 pipeline {
+ agent any
 
-  agent any
+ stages {
+ stage(‘checkout’) {
+ steps {
+ git branch: ‘develop’, url: ‘git@your url’
 
-  environment {
-    SVC_ACCOUNT_KEY = credentials('terraform-auth')
-  }
+ }
+ }
+ stage(‘Set Terraform path’) {
+ steps {
+ script {
+ def tfHome = tool name: ‘Terraform’
+ env.PATH = “${tfHome}:${env.PATH}”
+ }
+ sh ‘terraform — version’
 
-  stages {
 
-    stage('Checkout') {
-      steps {
-        checkout scm
-        sh 'mkdir -p creds'
-        sh 'echo $SVC_ACCOUNT_KEY | base64 -d > ./creds/serviceaccount.json'
-      }
-    }
+ }
+ }
 
-    stage('TF Plan') {
-      steps {
-        container('terraform') {
-          sh 'terraform init'
-          sh 'terraform plan -out myplan'
-        }
-      }
-    }
+ stage(‘Provision infrastructure’) {
 
-    stage('Approval') {
-      steps {
-        script {
-          def userInput = input(id: 'confirm', message: 'Apply Terraform?', parameters: [ [$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Apply terraform', name: 'confirm'] ])
-        }
-      }
-    }
+ steps {
+ dir(‘dev’)
+ {
+ sh ‘terraform init’
+ sh ‘terraform plan -out=plan’
+ // sh ‘terraform destroy -auto-approve’
+ sh ‘terraform apply plan’
+ }
 
-    stage('TF Apply') {
-      steps {
-        container('terraform') {
-          sh 'terraform apply -input=false myplan'
-        }
-      }
-    }
 
-  }
+ }
+ }
 
+
+
+ }
 }
